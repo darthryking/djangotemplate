@@ -18,13 +18,13 @@ import mimetypes
 mimetypes.add_type('image/png', '.png', True)
 
 
-# DEBUG = True
-# TEMPLATE_DEBUG = True
-# NO_SSL = True
+DEBUG = True
+TEMPLATE_DEBUG = True
+NO_SSL = True
 
-DEBUG = False
-TEMPLATE_DEBUG = False
-NO_SSL = False
+# DEBUG = False
+# TEMPLATE_DEBUG = False
+# NO_SSL = False
 
 
 ADMINS = (
@@ -121,7 +121,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'djangotemplate.ssl.SSLMiddleware',
+    'middleware.ssl.SSLMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -129,7 +129,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'djangotemplate.logger.Logger',
+    'middleware.logger.Logger',
 )
 
 ROOT_URLCONF = 'djangotemplate.urls'
