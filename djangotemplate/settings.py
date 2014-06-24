@@ -18,13 +18,13 @@ import mimetypes
 mimetypes.add_type('image/png', '.png', True)
 
 
-DEBUG = True
-TEMPLATE_DEBUG = True
-NO_SSL = True
+# DEBUG = True
+# TEMPLATE_DEBUG = True
+# NO_SSL = True
 
-# DEBUG = False
-# TEMPLATE_DEBUG = False
-# NO_SSL = False
+DEBUG = False
+TEMPLATE_DEBUG = False
+NO_SSL = False
 
 
 ADMINS = (
