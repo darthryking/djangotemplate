@@ -1,16 +1,9 @@
 # Django settings for djangotemplate project.
 
-'''//////////////////////////////
-..// Begin dynamic path hacks //
-.//////////////////////////////'''
-
+# Dynamic path variables
 import os.path
 SETTINGS_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.join(SETTINGS_DIR, '..')
-
-'''////////////////////////////////////////
-..// End of annoying dynamic path hacks //
-.////////////////////////////////////////'''
 
 
 # Fix for weird x-png MIME types:
@@ -18,18 +11,18 @@ import mimetypes
 mimetypes.add_type('image/png', '.png', True)
 
 
-# DEBUG = True
-# TEMPLATE_DEBUG = True
-# NO_SSL = True
+# Debug variables
+DEBUG = True
+TEMPLATE_DEBUG = True
+NO_SSL = True
 
-DEBUG = False
-TEMPLATE_DEBUG = False
-NO_SSL = False
+# DEBUG = False
+# TEMPLATE_DEBUG = False
+# NO_SSL = False
 
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
-    ('Ryan', 'darth.ryking@gmail.com'),
+    ('Your Name', 'your_email@example.com'),
 )
 
 MANAGERS = ADMINS
@@ -110,8 +103,18 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+
+'''///////////////////////////////////////////////////////////////////
+..// Obviously remember to change the SECRET_KEY for each new app! //
+.///////////////////////////////////////////////////////////////////'''
+
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'pdpz+62h-&%=eify&i$i1(0p^%2@eixb=#0#d7*g2*_slb=&nx'
+SECRET_KEY = '[[ INSERT_SECRET_KEY_HERE ]]'
+
+'''///////////////////////////////////////////////////////////////////
+..// Obviously remember to change the SECRET_KEY for each new app! //
+.///////////////////////////////////////////////////////////////////'''
+
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
