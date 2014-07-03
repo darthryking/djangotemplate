@@ -40,14 +40,14 @@ class IndexPage(TemplateView):
 def staff_only(view):
     """ Staff-only View decorator. """
     
-    def decorated_view(request):
+    def decorated_view(request, *args, **kwargs):
         if not request.user.is_authenticated():
             return redirect_to_login(request.get_full_path())
             
         if not request.user.is_staff:
             raise PermissionDenied
             
-        return view(request)
+        return view(request, *args, **kwargs)
         
     return decorated_view
     
