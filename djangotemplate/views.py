@@ -1,11 +1,14 @@
 import sys
 
+from django.core.exceptions import PermissionDenied
 from django.http import (HttpResponse, HttpResponseNotFound,
     HttpResponseBadRequest, HttpResponseServerError)
 from django.views.generic.base import View
 from django.views.generic import TemplateView
 
 from django.shortcuts import render
+
+from django.contrib.auth.views import redirect_to_login
 
 
 class ErrorView(View):
@@ -32,5 +35,20 @@ class NotFoundView(ErrorView):
 class IndexPage(TemplateView):
     """ The Index Page. """
     template_name = 'index.html'
+    
+    
+def staff_only(view):
+    """ Staff-only View decorator. """
+    
+    def decorated_view(request):
+        if not request.user.is_authenticated():
+            return redirect_to_login(request.get_full_path())
+            
+        if not request.user.is_staff:
+            raise PermissionDenied
+            
+        return view(request)
+        
+    return decorated_view
     
     
