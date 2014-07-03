@@ -15,7 +15,7 @@ urlpatterns = patterns('',
         
     url(
             r'^logout/$',
-            login_required(views.LogoutPage.as_view()),
+            views.LogoutPage.as_view(),
             name='users_logout',
         ),
         
