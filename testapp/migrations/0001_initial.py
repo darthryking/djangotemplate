@@ -1,36 +1,25 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'TestObject'
-        db.create_table(u'testapp_testobject', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('intField', self.gf('django.db.models.fields.IntegerField')(default=2)),
-            ('charField', self.gf('django.db.models.fields.CharField')(default='a', max_length=1)),
-            ('textField', self.gf('django.db.models.fields.TextField')()),
-        ))
-        db.send_create_signal(u'testapp', ['TestObject'])
+    dependencies = [
+    ]
 
-
-    def backwards(self, orm):
-        # Deleting model 'TestObject'
-        db.delete_table(u'testapp_testobject')
-
-
-    models = {
-        u'testapp.testobject': {
-            'Meta': {'object_name': 'TestObject'},
-            'charField': ('django.db.models.fields.CharField', [], {'default': "'a'", 'max_length': '1'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'intField': ('django.db.models.fields.IntegerField', [], {'default': '2'}),
-            'textField': ('django.db.models.fields.TextField', [], {})
-        }
-    }
-
-    complete_apps = ['testapp']
+    operations = [
+        migrations.CreateModel(
+            name='TestObject',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('intField', models.IntegerField(default=2)),
+                ('charField', models.CharField(default=b'a', max_length=1)),
+                ('textField', models.TextField()),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+    ]
