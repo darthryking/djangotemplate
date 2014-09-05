@@ -1,6 +1,0 @@
-*.pyc
-*.pyo
-*.py~
-*.py#
-runserver.py
-Thumbs.db
