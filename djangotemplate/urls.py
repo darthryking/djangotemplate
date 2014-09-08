@@ -3,6 +3,10 @@ from django.contrib import admin
 
 from djangotemplate import views
 
+# Override the Admin Site header
+admin.site.site_header = "Django Template Administration"
+
+# Set the error handlers
 handler403 = views.PermissionDeniedView.as_view()
 handler404 = views.NotFoundView.as_view()
 handler500 = views.ErrorView.as_view()
