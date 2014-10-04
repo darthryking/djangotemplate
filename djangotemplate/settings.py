@@ -38,18 +38,26 @@ SECRET_KEY = '[[ INSERT_SECRET_KEY_HERE ]]'
 # SECURITY WARNING: don't run with debug turned on in production!
 # Debug variables
 
-DEBUG = True
-TEMPLATE_DEBUG = True
-NO_SSL = True
+# DEBUG = True
+# TEMPLATE_DEBUG = True
+# NO_SSL = True
 
-# DEBUG = False
-# TEMPLATE_DEBUG = False
-# NO_SSL = False
+DEBUG = False
+TEMPLATE_DEBUG = False
+NO_SSL = False
 
+SSL_ENABLED = not NO_SSL
 
+if SSL_ENABLED:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    
+    
 # Login Redirect URL
-LOGIN_URL = '/users/login/'
+LOGIN_URL = 'users_login'
 
+
+# Not important for debug mode.
 ALLOWED_HOSTS = ['*']
 
 
@@ -179,7 +187,7 @@ try:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     
-    # Allow all host headers
+    # Serve this application under the following host names only
     ALLOWED_HOSTS = ['*']
     
     # Add Gunicorn to installed apps
