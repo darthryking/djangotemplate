@@ -1,6 +1,11 @@
 from django.http import HttpResponse
-from django.views.generic.base import View
+from django.views.generic import View
 from django.core.exceptions import PermissionDenied
+
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+
+from utils.decorators import staff_only
 
 
 class EchoView(View):
@@ -8,15 +13,29 @@ class EchoView(View):
     
     def get(self, request):
         response = '\n'.join(
-                ('='.join(pair) for pair in request.GET.iteritems())
-            )
+            ('='.join(pair) for pair in request.GET.iteritems())
+        )
         return HttpResponse(response)
         
     def post(self, request):
         response = '\n'.join(
-                ('='.join(pair) for pair in request.POST.iteritems())
-            )
+            ('='.join(pair) for pair in request.POST.iteritems())
+        )
         return HttpResponse(response)
+        
+        
+class LoginCheckView(View):
+    """ Test View that displays which user is currently logged in. """
+    def get(self, request):
+        return HttpResponse(str(request.user))
+        
+        
+class StaffOnlyView(View):
+    """ Test View that checks if the user is a staff user. """
+    
+    @method_decorator(staff_only)
+    def get(self, request):
+        return HttpResponse("Staff only!")
         
         
 class Generate403View(View):

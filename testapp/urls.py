@@ -1,30 +1,37 @@
-from django.contrib.auth.decorators import login_required
+from django.conf.urls import include, url
+from django.contrib import admin
 
-from django.views.decorators.csrf import csrf_exempt
-from django.conf.urls import patterns, include, url
-
-from djangotemplate.views import staff_only
 from testapp import views
 
-
-urlpatterns = patterns('',
+urlpatterns = (
     url(
-            r'^echo/$',
-            staff_only(views.EchoView.as_view()),
-            name='test_echo',
-        ),
-        
+        r'^echo/$',
+        views.EchoView.as_view(),
+        name='test_echo',
+    ),
+    
     url(
-            r'^500/$',
-            staff_only(views.Generate500View.as_view()),
-            name='test_500',
-        ),
-        
+        r'^logincheck/$',
+        views.LoginCheckView.as_view(),
+        name='test_logincheck',
+    ),
+    
     url(
-            r'^403/$',
-            staff_only(views.Generate403View.as_view()),
-            name='test_403',
-        ),
-        
+        r'^staffonly/$',
+        views.StaffOnlyView.as_view(),
+        name='test_staffonly',
+    ),
+    
+    url(
+        r'^500/$',
+        views.Generate500View.as_view(),
+        name='test_500',
+    ),
+    
+    url(
+        r'^403/$',
+        views.Generate403View.as_view(),
+        name='test_403',
+    ),
+    
 )
-

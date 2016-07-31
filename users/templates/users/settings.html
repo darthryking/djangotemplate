@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings Page{% endblock %}
+
+{% block content %}
+    <h2>Settings Page</h2>
+    <div>
+        <form name="settings" action="#" method="POST">
+            {% csrf_token %}
+            <p>Username: <input type="text" name="username" value="{{ request.user.username }}" required="required" /></p>
+            <p>Email: <input type="text" name="email" value="{{ request.user.email }}" required="required" /></p>
+            <p>First Name: <input type="text" name="firstname" value="{{ request.user.first_name }}" required="required" /></p>
+            <p>Last Name: <input type="text" name="lastname" value="{{ request.user.last_name }}" required="required" /></p>
+            <p>
+                Time Zone:
+                <select name="timezone">
+                    {% for timezone in timezones %}
+                        <option value="{{ timezone }}"
+                                {% if timezone == request.user.userprofile.timezone %}
+                                    selected="selected"
+                                {% endif %}
+                                >
+                            {{ timezone }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </p>
+            <p>
+                Gender:
+                <select name="gender">
+                    {% for gender, genderDisplay in GENDER_CHOICES %}
+                        <option value="{{ gender }}"
+                                {% if gender == request.user.userprofile.gender %}
+                                    selected="selected"
+                                {% endif %}
+                                >
+                            {{ genderDisplay }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </p>
+            <p>
+                About:
+                <textarea name="about">{{ user.userprofile.about }}</textarea>
+            </p>
+            <p>Old Password: <input type="password" name="password"></p>
+            <p>New Password: <input type="password" name="newpassword1"></p>
+            <p>New Password (Again): <input type="password" name="newpassword2"></p>
+            <input type="submit" value="Submit Changes">
+        </form>
+    </div>
+{% endblock %}
+

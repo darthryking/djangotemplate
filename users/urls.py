@@ -1,47 +1,37 @@
-from django.contrib.auth.decorators import login_required
-
-from django.views.decorators.csrf import csrf_exempt
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
+from django.contrib import admin
 
 from users import views
 
-
-urlpatterns = patterns('',
+urlpatterns = (
     url(
-            r'^login/$',
-            views.LoginPage.as_view(),
-            name='users_login',
-        ),
-        
+        r'^login/$',
+        views.LoginPage.as_view(),
+        name='users_login',
+    ),
+    
     url(
-            r'^logout/$',
-            views.LogoutPage.as_view(),
-            name='users_logout',
-        ),
-        
+        r'^register/$',
+        views.RegisterPage.as_view(),
+        name='users_register',
+    ),
+    
     url(
-            r'^register/$',
-            views.RegisterPage.as_view(),
-            name='users_register',
-        ),
-        
+        r'^logout/$',
+        views.LogoutPage.as_view(),
+        name='users_logout',
+    ),
+    
     url(
-            r'^processlog/$',
-            views.ProcessLog.as_view(),
-            name='users_processlog',
-        ),
-        
+        r'^profile/(?P<username>\w+)/$',
+        views.ProfilePage.as_view(),
+        name='users_profile',
+    ),
+    
     url(
-            r'^processreg/$',
-            views.ProcessReg.as_view(),
-            name='users_processreg',
-        ),
-        
-    url(
-            r'^test/$',
-            views.LoginTestView.as_view(),
-            name='users_test',
-        ),
-        
+        r'^settings/$',
+        views.SettingsPage.as_view(),
+        name='users_settings',
+    ),
+    
 )
-

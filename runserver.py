@@ -10,7 +10,7 @@ print "*** Checking for DB Migrations... ***"
 os.system('python manage.py makemigrations')
 
 print "\n*** Syncing DB Entries... ***"
-os.system('python manage.py syncdb')
+os.system('python manage.py migrate')
 
 print "\n*** Collecting static... please take off your wool sweaters for safety ***"
 if '--clear' in sys.argv:

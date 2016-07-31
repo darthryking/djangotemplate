@@ -1,1 +1,0 @@
-web: gunicorn djangotemplate.wsgi:application

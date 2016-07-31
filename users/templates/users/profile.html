@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile Page{% endblock %}
+
+{% block content %}
+    <h2>Profile for {{ profileuser.username }}</h2>
+    <div>
+        <p>Email: {{ profileuser.email }}</p>
+        <p>First Name: {{ profileuser.first_name }}</p>
+        <p>Last Name: {{ profileuser.last_name }}</p>
+        <p>Time Zone: {{ profileuser.userprofile.timezone }}</p>
+        <p>Gender: {{ profileuser.userprofile.get_gender_display }}</p>
+        <p>About:
+            <p>{{ profileuser.userprofile.about }}</p>
+        </p>
+    </div>
+{% endblock %}
