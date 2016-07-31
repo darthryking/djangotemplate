@@ -2,25 +2,48 @@
 
 {% block title %}Register Page{% endblock %}
 
-{% block body %}
+{% block content %}
     <h2>Register Page</h2>
+    
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    
     <div>
-        <form name="register" action="{% url 'users_processreg' %}" method="POST">
+        <form name="register" action="#" method="POST">
             {% csrf_token %}
-            <p>Email: <input type="text" name="email"></p>
-            <p>Username: <input type="text" name="username"></p>
-            <p>Password: <input type="password" name="password"></p>
-            <p>First Name: <input type="text" name="firstname"></p>
-            <p>Last Name: <input type="text" name="lastname"></p>
+            
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}" />
+            {% endif %}
+            
+            <p>Username: <input type="text" name="username" required="required" /></p>
+            <p>Email: <input type="email" name="email" required="required" /></p>
+            <p>First Name: <input type="text" name="firstname" required="required" /></p>
+            <p>Last Name: <input type="text" name="lastname" required="required" /></p>
+            <p>Password: <input type="password" name="password1" required="required" /></p>
+            <p>Password (Again): <input type="password" name="password2" required="required" /></p>
+            <p>
+                Time Zone:
+                <select name="timezone">
+                    {% for timezone in timezones %}
+                        <option value="{{ timezone }}">{{ timezone }}</option>
+                    {% endfor %}
+                </select>
+            </p>
             <p>
                 Gender:
                 <select name="gender">
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                    <option value="O">Other</option>
+                    {% for gender, genderDisplay in GENDER_CHOICES %}
+                        <option value="{{ gender }}">{{ genderDisplay }}</option>
+                    {% endfor %}
                 </select>
             </p>
-            <input type="submit" value="Register">
+            <input type="submit" value="Register" />
         </form>
     </div>
 {% endblock %}

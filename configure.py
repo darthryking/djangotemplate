@@ -93,29 +93,23 @@ def generate_key():
     # Generate a new secret key (consisting of 50 OS-produced random bytes)
     newKey = (
         ''.join(
-                (
-                    '\\x{}'.format(
-                            '0' + hex(n)[2:] if n < 0x10 else hex(n)[2:]
-                        )
-                    for n in (ord(b) for b in os.urandom(10))
-                )
-            )
+            '\\x{}'.format('0' + hex(n)[2:] if n < 0x10 else hex(n)[2:])
+            for n in (ord(b) for b in os.urandom(10))
+        )
         for i in xrange(5)
     )
     
     # Insert the new key into settings.py
     newData = data.replace(
-            '\'[[ INSERT_SECRET_KEY_HERE ]]\'',
-            '(\n{})'.format(
-                    ''.join(
-                            (
-                                '{}\'{}\'\n'.format(' ' * 4, keyPart)
-                                for keyPart in newKey
-                            )
-                        )
-                )
+        '\'[[ INSERT_SECRET_KEY_HERE ]]\'',
+        '(\n{})'.format(
+            ''.join(
+                '{}\'{}\'\n'.format(' ' * 4, keyPart)
+                for keyPart in newKey
+            )
         )
-        
+    )
+    
     # Save the new settings.py
     with open(settingsPath, 'w') as f:
         f.write(newData)
@@ -123,14 +117,14 @@ def generate_key():
         
 def main():
     print "Renaming directory 'djangotemplate' to '{}'... ".format(
-            PROJECT_NAME
-        ),
+        PROJECT_NAME
+    ),
     rename_directory()
     print "Done!"
     
     print "Replacing 'djangotemplate' references with '{}'... ".format(
-            PROJECT_NAME
-        ),
+        PROJECT_NAME
+    ),
     replace_references()
     print "Done!"
     
