@@ -5,11 +5,22 @@ from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
 
+import pytz
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     
-    timezone = models.CharField(default=settings.TIME_ZONE, max_length=50)
+    TIMEZONE_CHOICES = tuple(
+        (timezone,) * 2
+        for timezone in pytz.all_timezones
+    )
+    
+    timezone = models.CharField(
+        default=settings.TIME_ZONE,
+        max_length=50,
+        choices=TIMEZONE_CHOICES,
+    )
     
     about = models.TextField(blank=True)
     

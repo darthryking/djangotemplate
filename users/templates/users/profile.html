@@ -4,6 +4,9 @@
 
 {% block content %}
     <h2>Profile for {{ profileuser.username }}</h2>
+    {% if request.user == profileuser %}
+        <a href="{% url 'users_settings' %}">Edit Profile</a>
+    {% endif %}
     <div>
         <p>Email: {{ profileuser.email }}</p>
         <p>First Name: {{ profileuser.first_name }}</p>

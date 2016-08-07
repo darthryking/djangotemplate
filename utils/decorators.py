@@ -4,6 +4,26 @@ from django.core.exceptions import PermissionDenied
 from django.contrib.auth.views import redirect_to_login
 
 
+def memoized(f):
+    """ Simple memoization decorator. """
+    
+    _cache = {}
+    
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        key = (args, frozenset((k, v) for k, v in kwargs))
+        
+        if key not in _cache:
+            result = f(*args, **kwargs)
+            _cache[key] = result
+        else:
+            result = _cache[key]
+            
+        return result
+        
+    return wrapper
+    
+    
 def staff_only(view):
     """ Staff-only View decorator. """
     
@@ -18,5 +38,18 @@ def staff_only(view):
         return view(request, *args, **kwargs)
         
     return decorated_view
+    
+    
+def html5_required(Form):
+    """ Adds a "required" HTML5 attribute to any Form fields that are 
+    required.
+    
+    """
+    
+    for fieldName, field in Form.base_fields.iteritems():
+        if field.required:
+            field.widget.attrs['required'] = 'required'
+            
+    return Form
     
     
