@@ -7,20 +7,23 @@
     <div>
         <form name="settings" action="#" method="POST">
             {% csrf_token %}
-            <p>Username: <input type="text" name="username" value="{{ request.user.username }}" required="required" /></p>
+            
+            {{ settingsForm.as_p }}
+            
+            <!-- <p>Username: <input type="text" name="username" value="{{ request.user.username }}" maxlength="{{ settingsForm.fields.username.max_length }}" required="required" /></p>
             <p>Email: <input type="text" name="email" value="{{ request.user.email }}" required="required" /></p>
-            <p>First Name: <input type="text" name="firstname" value="{{ request.user.first_name }}" required="required" /></p>
-            <p>Last Name: <input type="text" name="lastname" value="{{ request.user.last_name }}" required="required" /></p>
+            <p>First Name: <input type="text" name="firstname" value="{{ request.user.first_name }}" maxlength="{{ settingsForm.fields.first_name.max_length }}" required="required" /></p>
+            <p>Last Name: <input type="text" name="lastname" value="{{ request.user.last_name }}" maxlength="{{ settingsForm.fields.last_name.max_length }}" required="required" /></p>
             <p>
                 Time Zone:
                 <select name="timezone">
-                    {% for timezone in timezones %}
+                    {% for timezone, timezoneDisplay in settingsForm.fields.timezone.choices %}
                         <option value="{{ timezone }}"
                                 {% if timezone == request.user.userprofile.timezone %}
                                     selected="selected"
                                 {% endif %}
                                 >
-                            {{ timezone }}
+                            {{ timezoneDisplay }}
                         </option>
                     {% endfor %}
                 </select>
@@ -28,7 +31,7 @@
             <p>
                 Gender:
                 <select name="gender">
-                    {% for gender, genderDisplay in GENDER_CHOICES %}
+                    {% for gender, genderDisplay in settingsForm.fields.gender.choices %}
                         <option value="{{ gender }}"
                                 {% if gender == request.user.userprofile.gender %}
                                     selected="selected"
@@ -43,9 +46,9 @@
                 About:
                 <textarea name="about">{{ user.userprofile.about }}</textarea>
             </p>
-            <p>Old Password: <input type="password" name="password"></p>
-            <p>New Password: <input type="password" name="newpassword1"></p>
-            <p>New Password (Again): <input type="password" name="newpassword2"></p>
+            <p>Old Password: <input type="password" name="password" maxlength="{{ settingsForm.fields.password.max_length }}"></p>
+            <p>New Password: <input type="password" name="newpassword1" maxlength="{{ settingsForm.fields.new_password1.max_length }}"></p>
+            <p>New Password (Again): <input type="password" name="newpassword2" maxlength="{{ settingsForm.fields.new_password2.max_length }}"></p> -->
             <input type="submit" value="Submit Changes">
         </form>
     </div>

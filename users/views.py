@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from django.db import transaction
 from django.http import HttpResponseBadRequest
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,9 +10,8 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 
-import pytz
-
 from users.models import UserProfile
+from users.forms import LoginForm, RegisterForm, SettingsForm
 
 from djangotemplate.views import LogoutLandingPage
 
@@ -23,66 +20,13 @@ class LoginPage(View):
     template_name = 'users/login.html'
     
     def get(self, request):
-        getData = request.GET
-        
-        context = {}
-        
-        if 'next' in getData:
-            context['next'] = getData['next']
+        if request.user.is_authenticated():
+            return redirect('index')
             
-        return render(request, self.template_name, context)
-    
-    def post(self, request):
-        postData = request.POST
-        
-        try:
-            username = postData['username']
-            password = postData['password']
-        except KeyError:
-            return HttpResponseBadRequest("Bad Request!")
-            
-        userQuery = User.objects.filter(username__iexact=username)
-        
-        if userQuery.exists():
-            assert userQuery.count() == 1
-            username = userQuery[0].username
-            
-        user = authenticate(username=username, password=password)
-        
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                
-                # Everything is OK
-                if 'next' in postData:
-                    return redirect(postData['next'])
-                else:
-                    return redirect('users_profile', username=username)
-                    
-            else:
-                # Account Disabled
-                messages.error(
-                    request,
-                    "Your account has been disabled. If this is unexpected, "
-                    "please contact the site administrators for help.",
-                )
-                return redirect(request.get_full_path())
-                
-        else:
-            # Authentication Failed
-            messages.error(request, "Login failed!")
-            return redirect(request.get_full_path())
-            
-            
-class RegisterPage(View):
-    template_name = 'users/register.html'
-    
-    def get(self, request):
         getData = request.GET
         
         context = {
-            'timezones'         :   pytz.all_timezones,
-            'GENDER_CHOICES'    :   UserProfile.GENDER_CHOICES,
+            'loginForm' :   LoginForm(),
         }
         
         if 'next' in getData:
@@ -91,66 +35,122 @@ class RegisterPage(View):
         return render(request, self.template_name, context)
         
     def post(self, request):
+        if request.user.is_authenticated():
+            return redirect('index')
+            
         postData = request.POST
         
-        try:
-            username = postData['username'].strip()
-            email = postData['email'].strip()
-            firstName = postData['firstname'].strip()
-            lastName = postData['lastname'].strip()
-            password1 = postData['password1']
-            password2 = postData['password2']
-            timezone = postData['timezone']
-            gender = postData['gender']
-            
-        except KeyError:
-            return HttpResponseBadRequest("Bad Request!")
-            
-        # Username, email, names, and password cannot be blank.
-        if not all((username, email, firstName, lastName, password1)):
-            return HttpResponseBadRequest("Bad Request!")
-            
-        # Timezone must be valid.
-        if timezone not in pytz.all_timezones:
-            timezone = settings.TIME_ZONE
-            
-        # Gender must be valid.
-        if gender not in (choice[0] for choice in UserProfile.GENDER_CHOICES):
-            gender, _ = UserProfile.GENDER_CHOICES[0]
-            
-        # Username must not already exist.
-        if User.objects.filter(username__iexact=username).exists():
-            messages.error(request, "Username already exists!")
-            return redirect(request.get_full_path())
-            
-        # Passwords must match.
-        if password1 != password2:
-            messages.error(request, "Passwords don't match!")
-            return redirect(request.get_fill_path())
-            
-        with transaction.atomic():
-            newUser = User.objects.create_user(
-                username=username,
-                password=password1,
-                email=email,
-                first_name=firstName,
-                last_name=lastName,
-            )
-            
-            newProfile = UserProfile(
-                user=newUser,
-                timezone=timezone,
-                gender=gender,
-            )
-            newProfile.save()
-            
-        user = authenticate(username=username, password=password1)
-        login(request, user)
+        loginForm = LoginForm(postData)
         
-        if 'next' in postData:
-            return redirect(postData['next'])
+        if loginForm.is_valid():
+            username = loginForm.cleaned_data['username']
+            password = loginForm.cleaned_data['password']
+            
+            userQuery = User.objects.filter(username__iexact=username)
+            
+            if userQuery.exists():
+                assert userQuery.count() == 1
+                username = userQuery[0].username
+                
+            user = authenticate(username=username, password=password)
+            
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    
+                    # Everything is OK
+                    if 'next' in postData:
+                        return redirect(postData['next'])
+                    else:
+                        return redirect('users_profile', username=username)
+                        
+                else:
+                    # Account Disabled
+                    loginForm.add_error(
+                        None,
+                        "Your account has been disabled. "
+                        "If this is unexpected, please contact the site "
+                        "administrators for help.",
+                    )
+                    
+            else:
+                # Authentication Failed
+                loginForm.add_error(None, "Login failed!")
+                
+        context = {
+            'loginForm' :   loginForm,
+        }
+        
+        return render(request, self.template_name, context)
+        
+        
+class RegisterPage(View):
+    template_name = 'users/register.html'
+    
+    def get(self, request):
+        if request.user.is_authenticated():
+            return redirect('index')
+            
+        getData = request.GET
+        
+        context = {
+            'regForm'   :   RegisterForm(),
+        }
+        
+        if 'next' in getData:
+            context['next'] = getData['next']
+            
+        return render(request, self.template_name, context)
+        
+    def post(self, request):
+        if request.user.is_authenticated():
+            return redirect('index')
+            
+        postData = request.POST
+        
+        regForm = RegisterForm(postData)
+        
+        if regForm.is_valid():
+            cleanedData = regForm.cleaned_data
+            
+            username = cleanedData['username']
+            email = cleanedData['email']
+            password = cleanedData['password1']
+            firstName = cleanedData['first_name']
+            lastName = cleanedData['last_name']
+            timezone = cleanedData['timezone']
+            gender = cleanedData['gender']
+            
+            with transaction.atomic():
+                newUser = User.objects.create_user(
+                    username=username,
+                    password=password,
+                    email=email,
+                    first_name=firstName,
+                    last_name=lastName,
+                )
+                
+                newProfile = UserProfile(
+                    user=newUser,
+                    timezone=timezone,
+                    gender=gender,
+                )
+                newProfile.save()
+                
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            
+            if 'next' in postData:
+                return redirect(postData['next'])
+            else:
+                return redirect('users_profile', username=username)
+                
         else:
-            return redirect('users_profile', username=username)
+            context = {
+                'regForm'   :   regForm,
+            }
+            
+            return render(request, self.template_name, context)
             
             
 class LogoutPage(View):
@@ -186,9 +186,23 @@ class SettingsPage(View):
         return super(SettingsPage, self).dispatch(request)
         
     def get(self, request):
+        user = request.user
+        userProfile = user.userprofile
+        
+        settingsForm = SettingsForm(
+            initial={
+                'username'      :   user.username,
+                'email'         :   user.email,
+                'first_name'    :   user.first_name,
+                'last_name'     :   user.last_name,
+                'timezone'      :   userProfile.timezone,
+                'gender'        :   userProfile.gender,
+                'about'         :   userProfile.about,
+            },
+        )
+        
         context = {
-            'timezones'         :   pytz.all_timezones,
-            'GENDER_CHOICES'    :   UserProfile.GENDER_CHOICES,
+            'settingsForm'  :   settingsForm,
         }
         
         return render(request, self.template_name, context)
@@ -196,96 +210,60 @@ class SettingsPage(View):
     def post(self, request):
         postData = request.POST
         
-        try:
-            username = postData['username'].strip()
-            email = postData['email'].strip()
-            firstName = postData['firstname'].strip()
-            lastName = postData['lastname'].strip()
-            timezone = postData['timezone']
-            gender = postData['gender']
-            about = postData['about']
-            password = postData['password']
-            newPassword1 = postData['newpassword1']
-            newPassword2 = postData['newpassword2']
+        settingsForm = SettingsForm(postData)
+        settingsForm.user = request.user
+        
+        if settingsForm.is_valid():
+            cleanedData = settingsForm.cleaned_data
             
-        except KeyError:
-            return HttpResponseBadRequest("Bad Request!")
+            username = cleanedData['username']
+            email = cleanedData['email']
+            firstName = cleanedData['first_name']
+            lastName = cleanedData['last_name']
+            timezone = cleanedData['timezone']
+            gender = cleanedData['gender']
+            about = cleanedData['about']
+            password = cleanedData['password']
+            newPassword1 = cleanedData['new_password1']
+            newPassword2 = cleanedData['new_password2']
             
-        # Username must not be blank.
-        if not username:
-            username = request.user.username
-            
-        # Email must not be blank.
-        if not email:
-            email = request.user.email
-            
-        # First name must not be blank.
-        if not firstName:
-            firstName = request.user.first_name
-            
-        # Last name must not be blank.
-        if not lastName:
-            lastName = request.user.last_name
-            
-        # New username must not already exist.
-        if (username != request.user.username
-                and User.objects.filter(username__iexact=username).exists()):
-            messages.error("Username already exists!")
-            return redirect(request.get_full_path())
-            
-        # Timezone must be valid.
-        if timezone not in pytz.all_timezones:
-            timezone = settings.TIME_ZONE
-            
-        # Gender must be valid.
-        if gender not in (choice[0] for choice in UserProfile.GENDER_CHOICES):
-            gender, _ = UserProfile.GENDER_CHOICES[0]
-            
-        with transaction.atomic():
-            user = request.user
-            
-            if password or newPassword1 or newPassword2:
-                # Incorrect password
-                if not user.check_password(password):
-                    messages.error(request, "Password incorrect!")
-                    return redirect(request.get_full_path())
+            with transaction.atomic():
+                user = request.user
+                
+                if password or newPassword1 or newPassword2:
+                    user.set_password(newPassword1)
+                    user.save()
                     
-                # Empty new password
-                if not newPassword1:
-                    messages.error(request, "New password cannot be empty!")
-                    return redirect(request.get_full_path())
+                    user = authenticate(
+                        username=user.username,
+                        password=newPassword1,
+                    )
                     
-                # Passwords don't match
-                if newPassword1 != newPassword2:
-                    messages.error(request, "Passwords don't match!")
-                    return redirect(request.get_full_path())
+                    assert user is not None
                     
-                user.set_password(newPassword1)
+                    login(request, user)
+                    
+                userProfile = user.userprofile
+                
+                user.username = username
+                user.email = email
+                user.first_name = firstName
+                user.last_name = lastName
+                
+                userProfile.timezone = timezone
+                userProfile.about = about
+                userProfile.gender = gender
+                
                 user.save()
+                userProfile.save()
                 
-                user = authenticate(
-                    username=user.username,
-                    password=newPassword1,
-                )
-                
-                assert user is not None
-                
-                login(request, user)
-                
-            userProfile = user.userprofile
+            return redirect('users_profile', username=username)
             
-            user.username = username
-            user.email = email
-            user.first_name = firstName
-            user.last_name = lastName
+        else:
+            context = {
+                'settingsForm'  :   settingsForm,
+            }
             
-            userProfile.timezone = timezone
-            userProfile.about = about
-            userProfile.gender = gender
+            return render(request, self.template_name, context)
             
-            user.save()
-            userProfile.save()
             
-        return redirect('users_profile', username=username)
-        
-        

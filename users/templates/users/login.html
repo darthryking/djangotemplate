@@ -6,14 +6,6 @@
     <h2>Login Page</h2>
     <p><a href="{% url 'users_register' %}">Register Here</a></p>
     
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    
     <div>
         <form name="login" action="#" method="POST">
             {% csrf_token %}
@@ -22,8 +14,10 @@
                 <input type="hidden" name="next" value="{{ next }}" />
             {% endif %}
             
-            <input type="text" name="username" required="required" />
-            <input type="password" name="password" required="required" />
+            {{ loginForm.as_p }}
+            
+            <!-- <input type="text" name="username" required="required" />
+            <input type="password" name="password" required="required" /> -->
             <input type="submit" value="Login" />
         </form>
     </div>
