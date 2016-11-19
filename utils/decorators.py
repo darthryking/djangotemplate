@@ -6,6 +6,11 @@ Miscellaneous decorators.
 
 """
 
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+    
 from functools import wraps
 
 from django.core.exceptions import PermissionDenied
@@ -19,7 +24,7 @@ def memoized(f):
     
     @wraps(f)
     def wrapper(*args, **kwargs):
-        key = (args, frozenset((k, v) for k, v in kwargs))
+        key = pickle.dumps((args, kwargs), 2)
         
         if key not in _cache:
             result = f(*args, **kwargs)
